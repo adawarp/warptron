@@ -26,14 +26,16 @@ client.on('connect', function () {
 client.on('message', function (topic, message) {
   if(topic === 'zigen1-restart-momo') {
     exec('killall momo', (err, stdout, stderr) => {
-    if (err) { console.log(err); }
-    console.log(stdout);
-  });
+      if (err) { console.log(err); }
+      console.log(stdout);
+    });
 
-  exec('sh momo.sh', (err, stdout, stderr) => {
-    if (err) { console.log(err); }
-    console.log(stdout);
-  });
+    setTimeout(() => {
+      exec('sh momo.sh', (err, stdout, stderr) => {
+        if (err) { console.log(err); }
+        console.log(stdout);
+      });
+    }, 3000)
   }
 })
 
