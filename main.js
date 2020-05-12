@@ -5,26 +5,27 @@ exec('sh momo.sh', (err, stdout, stderr) => {
   console.log(stdout);
 });
 
-
 const mqtt = require('mqtt')
 const client  = mqtt.connect('mqtt://160.16.238.254')
 
+const userName = 'roid1'
+
 client.on('connect', function () {
-  client.subscribe('zigen1', function (err) {
+  client.subscribe(userName, function (err) {
     console.log(err)
   })
 
-  client.subscribe('zigen1-restart-momo', function (err) {
+  client.subscribe(`${userName}-restart-momo`, function (err) {
     console.log(err)
   })
 
-  client.subscribe('zigen1/command', function (err) {
+  client.subscribe(`${userName}/command`, function (err) {
     console.log(err)
   })
 })
 
 client.on('message', function (topic, message) {
-  if(topic === 'zigen1-restart-momo') {
+  if(topic === `${userName}-restart-momo`) {
     exec('killall momo', (err, stdout, stderr) => {
       if (err) { console.log(err); }
       console.log(stdout);
@@ -44,8 +45,9 @@ const serialport = require("serialport");
 let commandForSerial = ''
 
 serialport.list().then(ports => {
-  const targetDevice = ports.find(p => p.manufacturer === 'FTDI');
+  const targetDevice = ports.find(p => p.manufacturer && p.manufacturer.indexOf('Arduino') > -1);
   if (targetDevice) {
+    console.log(targetDevice)
     const serialPort = new serialport(targetDevice.path, {
       baudRate: 9600,
       dataBits: 8,
@@ -55,10 +57,16 @@ serialport.list().then(ports => {
     });
 
     client.on('message', function (topic, message) {
-      if(topic === 'zigen1/command') {
-        commandForSerial = `${message.toString()}\r\n`
-        serialPort.write(commandForSerial)
+      if(topic === `${userName}/command`) {
+        console.log("mqtt message : ", message);
+        commandForSerial = message;
+        // commandForSerial = `${message.toString()}\r\n`
+        serialPort.write(message)
       }
+    })
+
+    serialPort.on("data", data => {
+      console.log("serial data : ", data);
     })
   }
 });
