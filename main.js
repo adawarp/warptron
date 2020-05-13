@@ -10,6 +10,9 @@ const client  = mqtt.connect('mqtt://160.16.238.254')
 
 const userName = 'roid1'
 
+const ARDUINO_PRO_MICRO_VENDOR_ID = '2341';
+const ARDUINO_PRO_MICRO_PRODUCT_ID = '8036';
+
 client.on('connect', function () {
   client.subscribe(userName, function (err) {
     console.log(err)
@@ -20,6 +23,7 @@ client.on('connect', function () {
   })
 
   client.subscribe(`${userName}/command`, function (err) {
+    console.log("connected")
     console.log(err)
   })
 })
@@ -45,11 +49,11 @@ const serialport = require("serialport");
 let commandForSerial = ''
 
 serialport.list().then(ports => {
-  const targetDevice = ports.find(p => p.manufacturer && p.manufacturer.indexOf('Arduino') > -1);
+  const targetDevice = ports.find(p => p.vendorId === ARDUINO_PRO_MICRO_VENDOR_ID && p.productId === ARDUINO_PRO_MICRO_PRODUCT_ID);
   if (targetDevice) {
     console.log(targetDevice)
     const serialPort = new serialport(targetDevice.path, {
-      baudRate: 9600,
+      baudRate: 115200,
       dataBits: 8,
       parity: "none",
       stopBits: 1,
@@ -58,15 +62,21 @@ serialport.list().then(ports => {
 
     client.on('message', function (topic, message) {
       if(topic === `${userName}/command`) {
-        console.log("mqtt message : ", message);
         commandForSerial = message;
-        // commandForSerial = `${message.toString()}\r\n`
-        serialPort.write(message)
       }
     })
+
+    setInterval(() => {
+      if(commandForSerial) {
+        console.log({commandForSerial});
+        serialPort.write(commandForSerial)
+      }
+    }, 50)
 
     serialPort.on("data", data => {
       console.log("serial data : ", data);
     })
+  } else {
+    console.warn("can not find arduino")
   }
 });
