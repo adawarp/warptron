@@ -8,7 +8,7 @@ exec('sh momo.sh', (err, stdout, stderr) => {
 const mqtt = require('mqtt')
 const client  = mqtt.connect('mqtt://160.16.238.254')
 
-const userName = 'roid1'
+const userName = 'roid2'
 
 const ARDUINO_PRO_MICRO_VENDOR_ID = '2341';
 const ARDUINO_PRO_MICRO_PRODUCT_ID = '8036';

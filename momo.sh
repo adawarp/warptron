@@ -1,1 +1,1 @@
-./momo --log-level 2 --video-device 0 sora wss://devwarp.work/signaling roid1 --auto --role sendrecv --multistream
+./momo --log-level 2 --no-audio-device sora wss://devwarp.work/signaling roid2 --auto --role sendrecv --multistream
