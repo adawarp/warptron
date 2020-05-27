@@ -9,7 +9,7 @@ const userName = key.roidId;
 console.log(userName);
 
 const {exec} = require('child_process');
-const execMomoCommand = `./momo --log-level 2 --no-audio-device sora wss://devwarp.work/signaling ${key.roidId} --auto --role sendrecv --multistream`;
+const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${key.roidId} --auto --role sendrecv --multistream`;
 
 exec(execMomoCommand, (err, stdout, stderr) => {
   if (err) { console.log(err); }
@@ -76,7 +76,6 @@ serialport.list().then(ports => {
 
     setInterval(() => {
       if(commandForSerial) {
-        console.log({commandForSerial});
         serialPort.write(commandForSerial)
       }
     }, 50)
