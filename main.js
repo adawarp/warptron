@@ -16,8 +16,9 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   console.log(stdout);
 });
 
-const ARDUINO_PRO_MICRO_VENDOR_ID = '2341';
-const ARDUINO_PRO_MICRO_PRODUCT_ID = '8036';
+// const ARDUINO_PATH = '/dev/ttyS0';
+const ARDUINO_PATH = '/dev/ttyAMA0';
+// const ARDUINO_PATH = '/dev/ttyACM0';
 
 client.on('connect', function () {
   client.subscribe(userName, function (err) {
@@ -56,7 +57,7 @@ const serialport = require("serialport");
 let commandForSerial = ''
 
 serialport.list().then(ports => {
-  const targetDevice = ports.find(p => p.vendorId === ARDUINO_PRO_MICRO_VENDOR_ID && p.productId === ARDUINO_PRO_MICRO_PRODUCT_ID);
+  const targetDevice = ports.find(p => p.path === ARDUINO_PATH);
   if (targetDevice) {
     console.log(targetDevice)
     const serialPort = new serialport(targetDevice.path, {
