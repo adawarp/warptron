@@ -19,7 +19,10 @@
   },
   "homepage": "https://github.com/adawarp/adaroid-os#readme",
   "dependencies": {
+    "actioncable": "^5.2.4-3",
     "mqtt": "^3.0.0",
-    "serialport": "^8.0.7"
+    "node-fetch": "^2.6.0",
+    "serialport": "^8.0.7",
+    "ws": "^7.3.0"
   }
 }
