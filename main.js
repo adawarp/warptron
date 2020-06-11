@@ -2,15 +2,24 @@ const mqtt = require('mqtt')
 const client  = mqtt.connect('mqtt://160.16.238.254')
 const fs = require('fs');
 const fetch = require('node-fetch');
-const WebSocket = require('ws');
+const WebSocket = require('ws')
 if (typeof window === "undefined") {
   global.window = {};
+  global.document = {};
+  global.document = { addEventListener: () => null }
+  global.WebSocket = WebSocket;
 }
+
+const actionCable = require('actioncable')
+actionCable.WebSocket = WebSocket;
+
 const rawData = fs.readFileSync('warp-key.json');
 const {exec} = require('child_process');
 
 const key = JSON.parse(rawData);
 const userName = key.roidId;
+const API_URL = key.apiUrl;
+const WS_URL = key.wsUrl
 console.log(userName);
 
 const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${key.roidId} --auto --role sendrecv --multistream`;
@@ -26,7 +35,7 @@ const ARDUINO_PATH = '/dev/ttyAMA0';
 
 
 const signInRoid = async () => {
-  const url = `http://localhost:3000/api/roid/sign_in`;
+  const url = `${API_URL}/roid/sign_in`;
   console.log(url)
   const params = {
     email: key.email,
@@ -52,9 +61,7 @@ const signInRoid = async () => {
       uid: headers.get("uid"),
     };
     console.warn("roid Sign in success", cred);
-  
-    const actionCable = require('actioncable')
-    const url = `ws://localhost:3000/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`;
+    const url = `${WS_URL}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`;
     const cable = actionCable.createConsumer(url);
     cable.subscriptions.create("AppearanceChannel", {
       connected() {
@@ -65,7 +72,6 @@ const signInRoid = async () => {
       },
     });
   
-    // localStorage.setItem("__cred", JSON.stringify(cred));
   } else {
     console.warn("Failed sign in");
   }
