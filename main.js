@@ -17,12 +17,11 @@ const rawData = fs.readFileSync('warp-key.json');
 const {exec} = require('child_process');
 
 const key = JSON.parse(rawData);
-const userName = key.roidId;
-const API_URL = key.apiUrl;
-const WS_URL = key.wsUrl
-console.log(userName);
+const {email, password, apiUrl, wsUrl} = key
+const API_URL = apiUrl;
+const WS_URL = wsUrl;
 
-const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${key.roidId} --auto --role sendrecv --multistream`;
+const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`;
 
 exec(execMomoCommand, (err, stdout, stderr) => {
   if (err) { console.log('error 1', err); }
@@ -38,8 +37,8 @@ const signInRoid = async () => {
   const url = `${API_URL}/roid/sign_in`;
   console.log(url)
   const params = {
-    email: key.email,
-    password: key.password,
+    email,
+    password
   };
   const signInRes = await fetch(url, {
     method: "POST",
@@ -80,15 +79,15 @@ const signInRoid = async () => {
 client.on('connect', function () {
   
   signInRoid()
-  client.subscribe(userName, function (err) {
+  client.subscribe(email, function (err) {
     console.log('error 2',err)
   })
 
-  client.subscribe(`${userName}-restart-momo`, function (err) {
+  client.subscribe(`${email}-restart-momo`, function (err) {
     console.log(err)
   })
 
-  client.subscribe(`${userName}/command`, function (err) {
+  client.subscribe(`${email}/command`, function (err) {
     console.log("connected")
     console.log(err)
   })
@@ -96,7 +95,7 @@ client.on('connect', function () {
 
 
 client.on('message', function (topic, message) {
-  if(topic === `${userName}-restart-momo`) {
+  if(topic === `${email}-restart-momo`) {
     exec('killall momo', (err, stdout, stderr) => {
       if (err) { console.log(err); }
       console.log(stdout);
@@ -128,7 +127,7 @@ serialport.list().then(ports => {
     });
 
     client.on('message', function (topic, message) {
-      if(topic === `${userName}/command`) {
+      if(topic === `${email}/command`) {
         commandForSerial = message;
       }
     })
