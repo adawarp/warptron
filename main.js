@@ -32,6 +32,7 @@ exec(execMomoCommand, (err, stdout, stderr) => {
 const ARDUINO_PATH = '/dev/ttyAMA0';
 // const ARDUINO_PATH = '/dev/ttyACM0';
 
+let cable;
 
 const signInRoid = async () => {
   const url = `${API_URL}/roid/sign_in`;
@@ -61,16 +62,40 @@ const signInRoid = async () => {
     };
     console.warn("roid Sign in success", cred);
     const url = `${WS_URL}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`;
-    const cable = actionCable.createConsumer(url);
-    cable.subscriptions.create("AppearanceChannel", {
+    cable = actionCable.createConsumer(url);
+    cable.subscriptions.create( {channel: "AppearanceChannel" }, {
       connected() {
-        this.perform("appear");
+        this.perform('appear')
+        console.log('connected appearance channel')
       },
       disconnected() {
-        // cable.unsubscribe()
+        console.log('Disconnected appearance channel')
+      },
+      received(data) {
+        console.warn(data)
       },
     });
-  
+    cable.subscriptions.create({ channel: "LineChannel", roidId: email }, {
+      connected() {
+        console.log('Connected LineChannel')
+      },
+      received(data) {
+        console.warn(data, 'received data from line channel')
+        if(data.message === 'restart-momo') {
+          exec('killall momo', (err, stdout, stderr) => {
+            if (err) { console.log(err); }
+            console.log(stdout);
+          });
+    
+          setTimeout(() => {
+            exec(execMomoCommand, (err, stdout, stderr) => {
+              if (err) { console.log(err); }
+              console.log(stdout);
+            });
+          }, 3000)
+        }
+      },
+    });
   } else {
     console.warn("Failed sign in");
   }
@@ -79,6 +104,8 @@ const signInRoid = async () => {
 client.on('connect', function () {
   
   signInRoid()
+
+  
   client.subscribe(email, function (err) {
     console.log('error 2',err)
   })
