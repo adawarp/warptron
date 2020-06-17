@@ -33,7 +33,7 @@ const ARDUINO_PATH = '/dev/ttyAMA0';
 // const ARDUINO_PATH = '/dev/ttyACM0';
 
 let cable;
-
+let apConsumer
 const signInRoid = async () => {
   const url = `${API_URL}/roid/sign_in`;
   console.log(url)
@@ -63,7 +63,7 @@ const signInRoid = async () => {
     console.warn("roid Sign in success", cred);
     const url = `${WS_URL}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`;
     cable = actionCable.createConsumer(url);
-    cable.subscriptions.create( {channel: "AppearanceChannel" }, {
+    apConsumer = cable.subscriptions.create( {channel: "AppearanceChannel", roidEmail: email }, {
       connected() {
         this.perform('appear')
         console.log('connected appearance channel')
@@ -101,11 +101,18 @@ const signInRoid = async () => {
   }
 }
 
-client.on('connect', function () {
-  
-  signInRoid()
 
+client.on('connect', function () {
+  signInRoid()
   
+  setInterval(() => {
+    const today = new Date()
+    const time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds()
+    apConsumer.send({
+      roidEmail: email,
+      time: time
+    })
+  }, 3000)
   client.subscribe(email, function (err) {
     console.log('error 2',err)
   })
@@ -118,23 +125,8 @@ client.on('connect', function () {
     console.log("connected")
     console.log(err)
   })
-})
+  
 
-
-client.on('message', function (topic, message) {
-  if(topic === `${email}-restart-momo`) {
-    exec('killall momo', (err, stdout, stderr) => {
-      if (err) { console.log(err); }
-      console.log(stdout);
-    });
-
-    setTimeout(() => {
-      exec(execMomoCommand, (err, stdout, stderr) => {
-        if (err) { console.log(err); }
-        console.log(stdout);
-      });
-    }, 3000)
-  }
 })
 
 const serialport = require("serialport");
