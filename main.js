@@ -13,6 +13,8 @@ if (typeof window === "undefined") {
 const actionCable = require('actioncable')
 actionCable.WebSocket = WebSocket;
 
+actionCable.ConnectionMonitor.staleThreshold = 6
+
 const rawData = fs.readFileSync('warp-key.json');
 const {exec} = require('child_process');
 
@@ -70,6 +72,7 @@ const signInRoid = async () => {
       },
       disconnected() {
         console.log('Disconnected appearance channel')
+        
       },
       received(data) {
         console.warn(data)
