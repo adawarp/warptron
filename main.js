@@ -28,8 +28,8 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   console.log('stdout',stdout);
 });
 
-// const ARDUINO_PATH = '/dev/ttyS0';
-const ARDUINO_PATH = '/dev/ttyAMA0';
+const ARDUINO_PATH = '/dev/ttyS0';
+// const ARDUINO_PATH = '/dev/ttyAMA0';
 // const ARDUINO_PATH = '/dev/ttyACM0';
 
 let cable;
