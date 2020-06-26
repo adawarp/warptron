@@ -1,7 +1,6 @@
 const mqtt = require('mqtt')
 const client = mqtt.connect('mqtt://160.16.238.254')
 const fs = require('fs')
-const fetch = require('node-fetch')
 const WebSocket = require('ws')
 if (typeof window === 'undefined') {
   global.window = {}
@@ -10,16 +9,14 @@ if (typeof window === 'undefined') {
   global.WebSocket = WebSocket
 }
 
-const actionCable = require('actioncable')
-actionCable.WebSocket = WebSocket
-
 const rawData = fs.readFileSync('warp-key.json')
 const { exec } = require('child_process')
 
+const signIn = require('./src/sign-in.js')
+const signInRoid = new signIn()
+
 const key = JSON.parse(rawData)
-const { email, password, apiUrl, wsUrl } = key
-const API_URL = apiUrl
-const WS_URL = wsUrl
+const { email } = key
 
 const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
@@ -34,84 +31,8 @@ const ARDUINO_PATH = '/dev/ttyS0'
 // const ARDUINO_PATH = '/dev/ttyAMA0';
 // const ARDUINO_PATH = '/dev/ttyACM0';
 
-let cable
-
-const signInRoid = async () => {
-  const url = `${API_URL}/roid/sign_in`
-  const params = {
-    email,
-    password
-  }
-  const signInRes = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify(params)
-  }).catch(() => {
-    alert('ERROR : POST /user')
-  })
-
-  if (signInRes.status === 200) {
-    const { headers } = signInRes
-
-    const cred = {
-      token: headers.get('access-token'),
-      client: headers.get('client'),
-      uid: headers.get('uid')
-    }
-    const url = `${WS_URL}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`
-    cable = actionCable.createConsumer(url)
-    cable.subscriptions.create(
-      { channel: 'AppearanceChannel' },
-      {
-        connected () {
-          this.perform('appear')
-          console.warn('connected appearance channel')
-        },
-        disconnected () {
-          console.warn('Disconnected appearance channel')
-        },
-        received (data) {
-          console.warn(data)
-        }
-      }
-    )
-    cable.subscriptions.create(
-      { channel: 'LineChannel', roidId: email },
-      {
-        connected () {
-          console.warn('Connected LineChannel')
-        },
-        received (data) {
-          console.warn(data, 'received data from line channel')
-          if (data.message === 'restart-momo') {
-            exec('killall momo', (err, stdout, stderr) => {
-              if (err) {
-                alert(err)
-              }
-              console.warn(stdout, stderr)
-            })
-
-            setTimeout(() => {
-              exec(execMomoCommand, (err, stdout, stderr) => {
-                if (err) {
-                  console.warn(err)
-                }
-                console.warn(stdout)
-              })
-            }, 3000)
-          }
-        }
-      }
-    )
-  } else {
-    console.warn('Failed sign in')
-  }
-}
-
 client.on('connect', function () {
-  signInRoid()
+  signInRoid.loginRoid(key)
 
   client.subscribe(email, function (err) {
     console.warn('error 2', err)
@@ -170,7 +91,7 @@ serialport.list().then((ports) => {
 
     setInterval(() => {
       if (commandForSerial) {
-        serialPort.Write(commandForSerial)
+        serialPort.write(commandForSerial)
       }
     }, 50)
 
