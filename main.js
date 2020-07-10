@@ -27,9 +27,10 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   console.warn('stdout', stdout)
 })
 
-const ARDUINO_PATH = '/dev/ttyS0'
+// const ARDUINO_PATH = '/dev/ttyS0'
 // const ARDUINO_PATH = '/dev/ttyAMA0';
 // const ARDUINO_PATH = '/dev/ttyACM0';
+const ARDUINO_PATH = '/dev/tty.usbmodem144101'
 
 client.on('connect', function () {
   signInRoid.loginRoid(key)
@@ -67,38 +68,22 @@ client.on('message', function (topic, message) {
   }
 })
 
-const serialport = require('serialport')
+const { Board, Fn } = require('johnny-five')
+const board = new Board({ port: ARDUINO_PATH })
 
-let commandForSerial = ''
+const servoType = require('./src/servoType')
+const bodyServo = new servoType()
+const cal = (x) => Fn.map(x, 0, 320, 0, 288)
 
-serialport.list().then((ports) => {
-  const targetDevice = ports.find((p) => p.path === ARDUINO_PATH)
-  if (targetDevice) {
-    console.warn(targetDevice)
-    const serialPort = new serialport(targetDevice.path, {
-      baudRate: 115200,
-      dataBits: 8,
-      parity: 'none',
-      stopBits: 1,
-      flowControl: false
-    })
-
-    client.on('message', function (topic, message) {
-      if (topic === `${email}/command`) {
-        commandForSerial = message
-      }
-    })
-
-    setInterval(() => {
-      if (commandForSerial) {
-        serialPort.write(commandForSerial)
-      }
-    }, 50)
-
-    serialPort.on('data', (data) => {
-      console.warn('serial data : ', data)
-    })
-  } else {
-    console.warn('can not find arduino')
-  }
+board.on('ready', () => {
+  client.on('message', function (topic, message) {
+    if (topic === `${email}/command`) {
+      bodyServo.neckPitch.to(cal(message[3]))
+      bodyServo.neckYaw.to(cal(message[4]))
+      bodyServo.leftArmPitch.to(cal(message[5]))
+      bodyServo.leftArmYaw.to(cal(message[6]))
+      bodyServo.rightArmPitch.to(cal(message[7]))
+      bodyServo.rightArmYaw.to(cal(message[8]))
+    }
+  })
 })

@@ -21,8 +21,9 @@ module.exports = function () {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify(params)
-    }).catch(() => {
-      alert('ERROR : POST /user')
+    }).catch((err) => {
+      console.warn('ERROR : POST /user')
+      console.warn(err)
     })
 
     if (signInRes.status === 200) {
