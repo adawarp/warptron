@@ -67,38 +67,32 @@ client.on('message', function (topic, message) {
   }
 })
 
-const serialport = require('serialport')
+var five = require("johnny-five");
+const {Board, Servo, Motor} = require("johnny-five");
+const board = new Board();
 
-let commandForSerial = ''
+board.on("ready", () => {
+  const yawServo = new five.Servo({
+    pin: 3,
+    center: true,
+    range: [60, 120]
+  });
 
-serialport.list().then((ports) => {
-  const targetDevice = ports.find((p) => p.path === ARDUINO_PATH)
-  if (targetDevice) {
-    console.warn(targetDevice)
-    const serialPort = new serialport(targetDevice.path, {
-      baudRate: 115200,
-      dataBits: 8,
-      parity: 'none',
-      stopBits: 1,
-      flowControl: false
-    })
+  const pitchServo = new five.Servo({
+    pin: 5,
+    center: true,
+    invert: true,
+    range: [80, 100]
+  });
 
-    client.on('message', function (topic, message) {
-      if (topic === `${email}/command`) {
-        commandForSerial = message
-      }
-    })
+  client.on('message', function (topic, message) {
+    if (topic === `${email}/command`) {
+      commandForSerial = message
+      const neckPitch = commandForSerial[3]
+      const neckYaw = commandForSerial[4]
 
-    setInterval(() => {
-      if (commandForSerial) {
-        serialPort.write(commandForSerial)
-      }
-    }, 50)
-
-    serialPort.on('data', (data) => {
-      console.warn('serial data : ', data)
-    })
-  } else {
-    console.warn('can not find arduino')
-  }
-})
+      yawServo.to(neckYaw)
+      pitchServo.to(neckPitch)
+    }
+  })
+});
