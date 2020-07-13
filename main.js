@@ -18,7 +18,7 @@ const signInRoid = new signIn()
 const key = JSON.parse(rawData)
 const { email } = key
 
-const execMomoCommand = `./momo --video-device 1 --log-level 2 sora wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
+const execMomoCommand = `./momo --video-device 0 --log-level 2 sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
 exec(execMomoCommand, (err, stdout, stderr) => {
   if (err) {
@@ -26,10 +26,6 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   }
   console.warn('stdout', stdout)
 })
-
-const ARDUINO_PATH = '/dev/ttyS0'
-// const ARDUINO_PATH = '/dev/ttyAMA0';
-// const ARDUINO_PATH = '/dev/ttyACM0';
 
 client.on('connect', function () {
   signInRoid.loginRoid(key)
@@ -67,27 +63,26 @@ client.on('message', function (topic, message) {
   }
 })
 
-var five = require("johnny-five");
-const {Board, Servo, Motor} = require("johnny-five");
-const board = new Board();
+const { Board, Servo } = require('johnny-five')
+const board = new Board()
 
-board.on("ready", () => {
-  const yawServo = new five.Servo({
+board.on('ready', () => {
+  const yawServo = new Servo({
     pin: 3,
     center: true,
     range: [60, 120]
-  });
+  })
 
-  const pitchServo = new five.Servo({
+  const pitchServo = new Servo({
     pin: 5,
     center: true,
     invert: true,
     range: [80, 100]
-  });
+  })
 
   client.on('message', function (topic, message) {
     if (topic === `${email}/command`) {
-      commandForSerial = message
+      const commandForSerial = message
       const neckPitch = commandForSerial[3]
       const neckYaw = commandForSerial[4]
 
@@ -95,4 +90,4 @@ board.on("ready", () => {
       pitchServo.to(neckPitch)
     }
   })
-});
+})
