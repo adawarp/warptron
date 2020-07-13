@@ -64,7 +64,7 @@ client.on('message', function (topic, message) {
 })
 
 const { Board, Servo } = require('johnny-five')
-const board = new Board()
+const board = new Board({ repl: false })
 
 board.on('ready', () => {
   const yawServo = new Servo({
