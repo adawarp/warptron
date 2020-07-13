@@ -9,7 +9,7 @@ if (typeof window === 'undefined') {
   global.WebSocket = WebSocket
 }
 
-const rawData = fs.readFileSync('warp-key.json')
+const rawData = fs.readFileSync('./warp-key.json')
 const { exec } = require('child_process')
 
 const signIn = require('./src/sign-in.js')
