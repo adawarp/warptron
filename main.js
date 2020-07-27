@@ -18,7 +18,7 @@ const signInRoid = new signIn()
 const key = JSON.parse(rawData)
 const { email } = key
 
-const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
+const execMomoCommand = `./momo --log-level 2 sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
 exec(execMomoCommand, (err, stdout, stderr) => {
   if (err) {
@@ -69,7 +69,7 @@ mqttClient.on('message', function (topic, message) {
 })
 
 const { Board, Fn } = require('johnny-five')
-const board = new Board({ port: ARDUINO_PATH })
+const board = new Board({ port: ARDUINO_PATH, repl: false })
 
 const servoType = require('./src/servoType')
 const bodyServo = new servoType()
@@ -96,14 +96,12 @@ board.on('ready', () => {
       bodyServo.leftArmYaw.to(cal(message[6]))
       bodyServo.rightArmPitch.to(cal(message[7]))
       bodyServo.rightArmYaw.to(cal(message[8]))
-      // bodyServo.leftMotor.to(cal(message[9]))
-      // bodyServo.rightMotor.to(cal(message[10]))
-      console.log(message[9], message[10], message)
+
       if (message[9] === 50 && message[10] === 50) {
         bodyServo.leftMotor.stop()
         bodyServo.rightMotor.stop()
       }
-      if (message[9] === 0 && message[10] === 0) {
+      if (message[9] === 100 && message[10] === 100) {
         board.digitalWrite(TB6612_AIN1, 1)
         board.digitalWrite(TB6612_AIN2, 0)
         bodyServo.leftMotor.speed(150)
@@ -111,7 +109,7 @@ board.on('ready', () => {
         board.digitalWrite(TB6612_BIN2, 1)
         bodyServo.rightMotor.speed(150)
       }
-      if (message[9] === 100 && message[10] === 100) {
+      if (message[9] === 0 && message[10] === 0) {
         board.digitalWrite(TB6612_AIN1, 0)
         board.digitalWrite(TB6612_AIN2, 1)
         bodyServo.leftMotor.speed(150)
