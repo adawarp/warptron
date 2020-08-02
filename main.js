@@ -27,10 +27,7 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   console.warn('stdout', stdout)
 })
 
-// const ARDUINO_PATH = '/dev/ttyS0'
-// const ARDUINO_PATH = '/dev/ttyAMA0';
-// const ARDUINO_PATH = '/dev/ttyACM0';
-const ARDUINO_PATH = '/dev/tty.usbmodem144101'
+const ARDUINO_PATH = '/dev/ttyS0'
 
 mqttClient.on('connect', function () {
   signInRoid.loginRoid(key)
