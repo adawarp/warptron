@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VERSION="2020.7"
+VERSION="2020.8.1"
 DIR_NAME="momo-${VERSION}_raspberry-pi-os_armv7"
 TAR_NAME="momo-${VERSION}_raspberry-pi-os_armv7.tar.gz"
 DOWNLOAD_URL="https://github.com/shiguredo/momo/releases/download/${VERSION}/${TAR_NAME}"
