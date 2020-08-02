@@ -27,10 +27,7 @@ exec(execMomoCommand, (err, stdout, stderr) => {
   console.warn('stdout', stdout)
 })
 
-// const ARDUINO_PATH = '/dev/ttyS0'
-// const ARDUINO_PATH = '/dev/ttyAMA0';
-// const ARDUINO_PATH = '/dev/ttyACM0';
-const ARDUINO_PATH = '/dev/tty.usbmodem144101'
+const ARDUINO_PATH = '/dev/ttyS0'
 
 mqttClient.on('connect', function () {
   signInRoid.loginRoid(key)
@@ -87,6 +84,7 @@ board.on('ready', () => {
   board.pinMode(TB6612_BIN1, board.MODES.OUTPUT)
   board.pinMode(TB6612_BIN2, board.MODES.OUTPUT)
   board.pinMode(TB6612_STBY, board.MODES.OUTPUT)
+  board.digitalWrite(TB6612_STBY, 1)
 
   mqttClient.on('message', function (topic, message) {
     if (topic === `${email}/command`) {
