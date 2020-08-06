@@ -18,7 +18,7 @@ const signInRoid = new signIn()
 const key = JSON.parse(rawData)
 const { email } = key
 
-const execMomoCommand = `./momo --log-level 2 sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
+const execMomoCommand = `./momo --log-level 2 --resolution 1640x1080 --priority RESOLUTION sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
 exec(execMomoCommand, (err, stdout, stderr) => {
   if (err) {
