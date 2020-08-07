@@ -59,7 +59,7 @@ module.exports = function () {
           },
           received (data) {
             console.warn(data, 'received data from line channel')
-            if (data.message === 'restart-momo') {
+            if (data.eventName === 'restart-momo') {
               exec('killall momo', (err, stdout, stderr) => {
                 if (err) {
                   alert(err)
@@ -75,6 +75,17 @@ module.exports = function () {
                   console.warn(stdout)
                 })
               }, 3000)
+            }
+            if (data.eventName === 'set-volume') {
+              exec(
+                'pactl set-sink-volume 1' + data.body.volume + '%',
+                (err, stdout, stderr) => {
+                  if (err) {
+                    alert(err)
+                  }
+                  console.warn(stdout, stderr)
+                }
+              )
             }
           }
         }
