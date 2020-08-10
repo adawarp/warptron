@@ -61,9 +61,7 @@ module.exports = function () {
             console.warn(data, 'received data from line channel')
             if (data.eventName === 'restart-momo') {
               exec('killall momo', (err, stdout, stderr) => {
-                if (err) {
-                  alert(err)
-                }
+                console.warn(err)
                 console.warn(stdout, stderr)
               })
 
@@ -78,11 +76,11 @@ module.exports = function () {
             }
             if (data.eventName === 'set-volume') {
               exec(
-                'pactl set-sink-volume 1' + data.body.volume + '%',
+                '/usr/bin/amixer -c1 sset Speaker ' +
+                  data.body.volume +
+                  '% unmute',
                 (err, stdout, stderr) => {
-                  if (err) {
-                    alert(err)
-                  }
+                  console.warn(err)
                   console.warn(stdout, stderr)
                 }
               )
