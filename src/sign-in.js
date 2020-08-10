@@ -59,11 +59,9 @@ module.exports = function () {
           },
           received (data) {
             console.warn(data, 'received data from line channel')
-            if (data.message === 'restart-momo') {
+            if (data.eventName === 'restart-momo') {
               exec('killall momo', (err, stdout, stderr) => {
-                if (err) {
-                  alert(err)
-                }
+                console.warn(err)
                 console.warn(stdout, stderr)
               })
 
@@ -75,6 +73,17 @@ module.exports = function () {
                   console.warn(stdout)
                 })
               }, 3000)
+            }
+            if (data.eventName === 'set-volume') {
+              exec(
+                '/usr/bin/amixer -c1 sset Speaker ' +
+                  data.body.volume +
+                  '% unmute',
+                (err, stdout, stderr) => {
+                  console.warn(err)
+                  console.warn(stdout, stderr)
+                }
+              )
             }
           }
         }
