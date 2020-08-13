@@ -15,6 +15,7 @@ const key = JSON.parse(rawData)
 const { email } = key
 
 const signIn = require('./src/signIn.js')
+const channelConnections = require('./src/channels')
 
 const execMomoCommand = `./momo --log-level 2 --resolution 1640x1080 --priority RESOLUTION sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
@@ -62,6 +63,13 @@ mqttClient.on('message', function (topic, message) {
     }, 3000)
   }
 })
+
+setInterval(() => {
+  channelConnections.lineChannelSubscription.send({
+    roidId: email,
+    message: 'pong'
+  })
+}, 4000)
 
 const { Board, Fn } = require('johnny-five')
 const board = new Board({ port: ARDUINO_PATH, repl: false })
