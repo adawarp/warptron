@@ -9,14 +9,12 @@ if (typeof window === 'undefined') {
   global.WebSocket = WebSocket
 }
 
-const rawData = fs.readFileSync('warp-key.json')
 const { exec } = require('child_process')
-
-const signIn = require('./src/sign-in.js')
-const signInRoid = new signIn()
-
+const rawData = fs.readFileSync('warp-key.json')
 const key = JSON.parse(rawData)
 const { email } = key
+
+const signIn = require('./src/signIn.js')
 
 const execMomoCommand = `./momo --log-level 2 --resolution 1640x1080 --priority RESOLUTION sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
 
@@ -30,7 +28,7 @@ exec(execMomoCommand, (err, stdout, stderr) => {
 const ARDUINO_PATH = '/dev/ttyS0'
 
 mqttClient.on('connect', function () {
-  signInRoid.loginRoid(key)
+  signIn.loginRoid(key)
 
   mqttClient.subscribe(email, function (err) {
     console.warn('error 2', err)
