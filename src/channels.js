@@ -24,7 +24,7 @@ exports.connectToChannel = (cred, WS_URL) => {
       }
     }
   )
-  cable.subscriptions.create(
+  const cs = cable.subscriptions.create(
     { channel: 'LineChannel', roidId: cred.uid },
     {
       connected () {
@@ -59,6 +59,8 @@ exports.connectToChannel = (cred, WS_URL) => {
       }
     }
   )
+
+  exports.lineChannelSubscription = cs
 }
 
 module.exports = exports
