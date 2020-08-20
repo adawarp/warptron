@@ -1,7 +1,7 @@
 const actionCable = require('actioncable')
 actionCable.WebSocket = WebSocket
 
-const runCommand = require('./childProcess')
+const runExecCommand = require('./execCommand')
 
 var exports = {}
 
@@ -34,16 +34,16 @@ exports.connectToChannel = (cred, WS_URL) => {
       received (data) {
         console.warn(data, 'received data from line channel')
         if (data.eventName === 'restart-momo') {
-          runCommand(data.eventName, 'killall momo')
+          runExecCommand(data.eventName, 'killall momo')
 
           setTimeout(() => {
-            runCommand(data.eventName, execMomoCommand)
+            runExecCommand(data.eventName, execMomoCommand)
           }, 3000)
         }
         if (data.eventName === 'set-volume') {
           const setVolumeCommand =
             '/usr/bin/amixer -c1 sset Speaker ' + data.body.volume + '% unmute'
-          runCommand(data.eventName, setVolumeCommand)
+          runExecCommand(data.eventName, setVolumeCommand)
         }
       }
     }
