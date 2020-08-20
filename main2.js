@@ -1,6 +1,6 @@
 const mqtt = require('mqtt')
 const mqttClient = mqtt.connect('mqtt://160.16.238.254')
-const fs = require('fs')
+
 const WebSocket = require('ws')
 if (typeof window === 'undefined') {
   global.window = {}
@@ -9,20 +9,13 @@ if (typeof window === 'undefined') {
   global.WebSocket = WebSocket
 }
 
-const { exec } = require('child_process')
-const rawData = fs.readFileSync('warp-key.json')
 const signIn = require('./src2/signIn.js')
-const key = JSON.parse(rawData)
+const runExecCommand = require('./src2/execCommand')
+const constantsData = require('./src2/constants')
+const { execMomoCommand, key } = constantsData
 const { email } = key
 
-const execMomoCommand = `./momo --log-level 2 --resolution 1640x1080 --priority RESOLUTION sora --video-codec VP8 wss://devwarp.work/signaling ${email} --auto --role sendrecv --multistream`
-
-exec(execMomoCommand, (err, stdout, stderr) => {
-  if (err) {
-    console.warn('error 1', err)
-  }
-  console.warn('stdout', stdout)
-})
+runExecCommand('start-momo', execMomoCommand)
 
 const ARDUINO_PATH = '/dev/ttyS0'
 
@@ -43,10 +36,10 @@ mqttClient.on('connect', function () {
 })
 
 const { Board, Fn } = require('johnny-five')
+const servoType = require('./src/servoType')
 
 const board = new Board({ port: ARDUINO_PATH, repl: false })
 
-const servoType = require('./src/servoType')
 const bodyServo = new servoType()
 const cal = (x) => Fn.map(x, 0, 320, 0, 288)
 
