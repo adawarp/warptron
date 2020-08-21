@@ -1,5 +1,5 @@
 const fs = require('fs')
-const rawData = fs.readFileSync('../../warp-key.json')
+const rawData = fs.readFileSync('warp-key.json')
 
 const key = JSON.parse(rawData)
 const { email } = key

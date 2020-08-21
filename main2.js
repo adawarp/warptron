@@ -11,7 +11,7 @@ if (typeof window === 'undefined') {
 
 const signIn = require('./src2/signIn.js')
 const runExecCommand = require('./src2/execCommand')
-const constantsData = require('./src2/constants')
+const constantsData = require('./constants')
 const { execMomoCommand, key } = constantsData
 const { email } = key
 

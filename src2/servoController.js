@@ -1,4 +1,4 @@
-const constantsData = require('./src2/constants')
+const constantsData = require('../constants')
 const { key } = constantsData
 const { email } = key
 
