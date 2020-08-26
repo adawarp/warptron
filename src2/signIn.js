@@ -1,10 +1,13 @@
 const fetch = require('node-fetch')
 
-const channelConnections = require('./channels')
+// const channelConnections = require('./channels')
+const constantsData = require('../constants')
+const { key, setCred, } = constantsData
+
 
 var exports = {}
 
-exports.loginRoid = async (key) => {
+exports.loginRoid = async () => {
   const { email, password, apiUrl, wsUrl } = key
   const API_URL = apiUrl
   const url = `${API_URL}/roid/sign_in`
@@ -30,7 +33,9 @@ exports.loginRoid = async (key) => {
       client: headers.get('client'),
       uid: headers.get('uid')
     }
-    channelConnections.connectToChannel(cred, wsUrl)
+    setCred(cred)
+    
+    // channelConnections.connectToChannel(cred, wsUrl)
   } else {
     console.warn('Failed sign in')
   }
