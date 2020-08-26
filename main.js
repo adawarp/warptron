@@ -115,7 +115,7 @@ board.on('ready', () => {
         bodyServo.rightMotor.speed(150)
       }
 
-      if (message[9] === 100 && message[10] === 0) {
+      if (message[9] === 0 && message[10] === 100) {
         board.digitalWrite(TB6612_AIN1, 0)
         board.digitalWrite(TB6612_AIN2, 1)
         bodyServo.leftMotor.speed(150)
@@ -125,7 +125,7 @@ board.on('ready', () => {
         bodyServo.rightMotor.speed(150)
       }
 
-      if (message[9] === 0 && message[10] === 100) {
+      if (message[9] === 100 && message[10] === 0) {
         board.digitalWrite(TB6612_AIN1, 1)
         board.digitalWrite(TB6612_AIN2, 0)
         bodyServo.leftMotor.speed(150)
