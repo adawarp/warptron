@@ -8,5 +8,9 @@ const execMomoCommand = `./momo --log-level 2 --resolution 1640x1080 --priority 
 
 module.exports = {
   key,
-  execMomoCommand
+  execMomoCommand,
+  cred: '',
+  setCred(cred) {
+    this.cred = cred
+  }
 }
