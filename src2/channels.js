@@ -9,6 +9,7 @@ const {WS_URL} = key
 console.warn('credential is : ', cred)
 // var exports = {}
 
+const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${cred.uid} --auto --role sendrecv --multistream`
 
 // exports.connectToChannel = (cred, WS_URL) => {
 //   const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${cred.uid} --auto --role sendrecv --multistream`
@@ -71,7 +72,7 @@ const actionCableState = {
     const action = actions[actionName]
     if (action) {
       logger(`action dispatched: ${ actionName }`);
-      action.apply(machine, payload);
+      action.apply(actionCableState, payload);
     }
   },
   changeState(newState) {
