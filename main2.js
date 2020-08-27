@@ -15,6 +15,8 @@ const constantsData = require('./constants')
 const { execMomoCommand, key } = constantsData
 const { email } = key
 
+const actionCableState = require('./src2/channels')
+
 // runExecCommand('start-momo', execMomoCommand)
 
 const ARDUINO_PATH = '/dev/ttyS0'
@@ -36,7 +38,7 @@ const bodyServo = new Servo({
 })
 
 
-const render = (state) => {
+const logger = (state) => {
   console.warn(state)
 }
 
@@ -46,27 +48,29 @@ const machine = {
     console.warn('****', actionName, ...payload)
     const actions = this.transitions[this.state];
     const action = actions[actionName]
-    console.warn('***', actions)
+    logger(`actions: ${actions}`)
     if (action) {
-      render(`action dispatched: ${ actionName }`);
+      logger(`action dispatched: ${ actionName }`);
       action.apply(machine, payload);
     }
   },
   changeState(newState) {
-    render(`state changed: ${newState}`)
+    logger(`state changed: ${newState}`)
     this.state = newState
   },
   transitions: {
     'init': {
       signIn: function () {
         signRoid.loginRoid()
-        this.changeState('connectMqtt')
-        this.dispatch('connectedMqtt')
+        this.changeState('connectCable')
+        this.dispatch('connectedCable')
       }
     },
-    'failedSignIn': {
-      retry: function () {
-        this.changeState('init')
+    'connectCable': {
+      connectedCable: function () {
+        actionCableState.dispatch('createConsumer')
+        this.changeState('connectMqtt')
+        this.dispatch('connectedMqtt')
       }
     },
     
@@ -84,10 +88,17 @@ const machine = {
       boardReady: function() {
         board.on('ready', () => {
           console.warn('board is ready')
-          this.changeState('signOut')
+          this.changeState('subscribeTopic')
           board.pinMode(TB6612_AIN1, board.MODES.OUTPUT)
           bodyServo.to(90)
+          this.dispatch('mqttSubscribed')
         })
+      }
+    },
+  
+    'subscribeTopic': {
+      mqttSubscribed: function() {
+        mqttClient.subscribe(email,logger)
       }
     },
     
@@ -100,7 +111,7 @@ const machine = {
   }
 }
 
-render(`initial state: ${machine.state}`)
+logger(`initial state: ${machine.state}`)
 machine.dispatch('signIn')
 
 
