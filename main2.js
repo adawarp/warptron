@@ -10,32 +10,34 @@ if (typeof window === 'undefined') {
 }
 
 const signRoid = require('./src2/signIn.js')
-const runExecCommand = require('./src2/execCommand')
 const constantsData = require('./constants')
-const { execMomoCommand, key, cred } = constantsData
+const { key } = constantsData
 const { email } = key
 
 const actionCableState = require('./src2/channels')
 
-// runExecCommand('start-momo', execMomoCommand)
-
 const ARDUINO_PATH = '/dev/ttyS0'
 const ARDUINO_PATH_FOR_DEV = '/dev/tty.usbmodem141101'
 
-const { Board, Servo } = require('johnny-five')
-// const servoController = require('./src2/servoController')
+const { Board } = require('johnny-five')
 const board = new Board({ port: ARDUINO_PATH_FOR_DEV, repl: false })
 
+const servoController = require('./src2/servoController')
+
 const TB6612_AIN1 = 0
+const TB6612_AIN2 = 1
+const TB6612_BIN1 = 2
+const TB6612_BIN2 = 3
+const TB6612_STBY = 8
 
-
-const bodyServo = new Servo({
-  controller: 'PCA9685',
-  pin: 0,
-  pwmRange: [560, 2480],
-  range: [65, 100],
-  degreeRange: [-150, 150]
-})
+const pinMode = () => {
+  board.pinMode(TB6612_AIN1, board.MODES.OUTPUT)
+  board.pinMode(TB6612_AIN2, board.MODES.OUTPUT)
+  board.pinMode(TB6612_BIN1, board.MODES.OUTPUT)
+  board.pinMode(TB6612_BIN2, board.MODES.OUTPUT)
+  board.pinMode(TB6612_STBY, board.MODES.OUTPUT)
+  board.digitalWrite(TB6612_STBY, 1)
+}
 
 
 const logger = (state) => {
@@ -45,7 +47,7 @@ const logger = (state) => {
 const machine = {
   state: 'init',
   dispatch(actionName, ...payload) {
-    console.warn('****', actionName, ...payload)
+    logger('****', actionName, ...payload)
     const actions = this.transitions[this.state];
     const action = actions[actionName]
     logger(`actions: ${actions}`)
@@ -61,23 +63,30 @@ const machine = {
   transitions: {
     'init': {
       signIn: function () {
-        signRoid.loginRoid()
-        this.changeState('connectCable')
-        this.dispatch('connectedCable')
-      }
-    },
-    'connectCable': {
-      connectedCable: function () {
-        actionCableState.dispatch('createConsumer')
         this.changeState('connectMqtt')
+        this.dispatch('connectedMqtt')
+  
+        signRoid.loginRoid().then(res => {
+          this.changeState('connectChannel')
+          this.dispatch('connectedChannel', res)
+        }).catch(err => {
+          logger(err)
+          this.changeState('error')
+          this.dispatch('failed')
+        })
+      },
+    },
+    'connectChannel': {
+      connectedChannel: function(data) {
+        logger(data)
+        actionCableState.dispatch('createConsumer', data)
         this.dispatch('connectedMqtt')
       }
     },
-    
     'connectMqtt': {
       connectedMqtt: function() {
         mqttClient.on('connect', () => {
-          console.warn('mqtt connected')
+          logger('mqtt connected ++')
           this.changeState('boardOpen')
           this.dispatch('boardReady')
         })
@@ -87,10 +96,9 @@ const machine = {
     'boardOpen': {
       boardReady: function() {
         board.on('ready', () => {
-          console.warn('board is ready')
+          logger('board is ready')
           this.changeState('subscribeTopic')
-          board.pinMode(TB6612_AIN1, board.MODES.OUTPUT)
-          bodyServo.to(90)
+          pinMode()
           this.dispatch('mqttSubscribed')
         })
       }
@@ -98,13 +106,27 @@ const machine = {
   
     'subscribeTopic': {
       mqttSubscribed: function() {
+        this.changeState('reciveMqttMessage')
         mqttClient.subscribe(email,logger)
+        mqttClient.subscribe(`${email}/command`,logger)
+        this.dispatch('mqttMessage')
       }
     },
-    
-    'signOut': {
-      logOut: function () {
-        console.warn('__cred', cred)
+  
+    'reciveMqttMessage': {
+      mqttMessage: function() {
+        logger('message ++++=   _')
+  
+        // this.changeState('init')
+        mqttClient.on('message', function (topic, message) {
+          logger(message)
+  
+          servoController(board, topic, message)
+        })
+      }
+    },
+    'error': {
+      failed: function () {
         this.changeState('init')
       }
     }
@@ -114,47 +136,3 @@ const machine = {
 logger(`initial state: ${machine.state}`)
 machine.dispatch('signIn')
 
-
-// setTimeout(() => {
-//   machine.dispatch('logOut')
-//   console.warn('Log out')
-// }, 4000)
-
-
-
-//
-// mqttClient.on('connect', function () {
-//
-//   mqttClient.subscribe(email, function (err) {
-//     console.warn('error 2', err)
-//   })
-//
-//   mqttClient.subscribe(`${email}-restart-momo`, function (err) {
-//     console.warn(err)
-//   })
-//
-//   mqttClient.subscribe(`${email}/command`, function (err) {
-//     console.warn(err)
-//   })
-// })
-//
-
-//
-// const TB6612_AIN1 = 0
-// const TB6612_AIN2 = 1
-// const TB6612_BIN1 = 2
-// const TB6612_BIN2 = 3
-// const TB6612_STBY = 8
-//
-// board.on('ready', () => {
-//   board.pinMode(TB6612_AIN1, board.MODES.OUTPUT)
-//   board.pinMode(TB6612_AIN2, board.MODES.OUTPUT)
-//   board.pinMode(TB6612_BIN1, board.MODES.OUTPUT)
-//   board.pinMode(TB6612_BIN2, board.MODES.OUTPUT)
-//   board.pinMode(TB6612_STBY, board.MODES.OUTPUT)
-//   board.digitalWrite(TB6612_STBY, 1)
-//
-//   mqttClient.on('message', function (topic, message) {
-//     servoController(board, topic, message)
-//   })
-// })

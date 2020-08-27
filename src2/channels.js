@@ -1,15 +1,15 @@
 const actionCable = require('actioncable')
+const WebSocket = require('ws')
 actionCable.WebSocket = WebSocket
+
 
 const runExecCommand = require('./execCommand')
 
 const constantsData = require('../constants')
-const { key, cred, } = constantsData
-const {WS_URL} = key
-console.warn('credential is : ', cred)
+const { key, execMomoCommand } = constantsData
+const {wsUrl} = key
+console.log(key)
 // var exports = {}
-
-const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${cred.uid} --auto --role sendrecv --multistream`
 
 // exports.connectToChannel = (cred, WS_URL) => {
 //   const execMomoCommand = `./momo --log-level 2 sora wss://devwarp.work/signaling ${cred.uid} --auto --role sendrecv --multistream`
@@ -81,8 +81,9 @@ const actionCableState = {
   },
   transitions: {
     'init': {
-      createConsumer: function () {
-        const url = `${WS_URL}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`
+      createConsumer: function (cred) {
+        const url = `${wsUrl}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`
+        console.log(url)
         this.cable = actionCable.createConsumer(url)
         this.changeState('connectAppearance')
         this.dispatch('connectedAppearanceChannel')
@@ -109,7 +110,7 @@ const actionCableState = {
       },
       connectedLineChannel: function () {
         this.cable.subscriptions.create(
-          { channel: 'LineChannel', roidId: cred.uid },
+          { channel: 'LineChannel', roidId: key.email },
           {
             connected () {
               console.warn('Connected LineChannel')
