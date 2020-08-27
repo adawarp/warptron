@@ -1,6 +1,9 @@
 const { exec } = require('child_process')
 const actionCable = require('actioncable')
+const WebSocket = require('ws')
+
 actionCable.WebSocket = WebSocket
+
 
 var exports = {}
 
