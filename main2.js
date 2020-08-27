@@ -12,7 +12,7 @@ if (typeof window === 'undefined') {
 const signRoid = require('./src2/signIn.js')
 const runExecCommand = require('./src2/execCommand')
 const constantsData = require('./constants')
-const { execMomoCommand, key } = constantsData
+const { execMomoCommand, key, cred } = constantsData
 const { email } = key
 
 const actionCableState = require('./src2/channels')
