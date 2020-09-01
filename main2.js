@@ -63,12 +63,13 @@ const machine = {
   transitions: {
     'init': {
       signIn: function () {
-        this.changeState('connectMqtt')
-        this.dispatch('connectedMqtt')
+
   
         signRoid.loginRoid().then(res => {
-          this.changeState('connectChannel')
-          this.dispatch('connectedChannel', res)
+          // this.changeState('connectChannel')
+          // this.dispatch('connectedChannel', res)
+          this.changeState('connectMqtt')
+          this.dispatch('connectedMqtt')
         }).catch(err => {
           logger(err)
           this.changeState('error')
@@ -106,14 +107,14 @@ const machine = {
   
     'subscribeTopic': {
       mqttSubscribed: function() {
-        this.changeState('reciveMqttMessage')
+        this.changeState('receiveMqttMessage')
         mqttClient.subscribe(email,logger)
         mqttClient.subscribe(`${email}/command`,logger)
         this.dispatch('mqttMessage')
       }
     },
   
-    'reciveMqttMessage': {
+    'receiveMqttMessage': {
       mqttMessage: function() {
         logger('message ++++=   _')
   
