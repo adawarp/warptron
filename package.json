@@ -22,6 +22,7 @@
   "homepage": "https://github.com/adawarp/adaroid-os#readme",
   "dependencies": {
     "actioncable": "^5.2.4-3",
+    "debug": "^4.1.1",
     "johnny-five": "^2.0.0",
     "mqtt": "^3.0.0",
     "node-fetch": "^2.6.1",
