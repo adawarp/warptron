@@ -45,6 +45,11 @@ class ChannelsConnection {
       {
         connected () {
           console.warn('Connected LineChannel')
+		this.send({
+			roidId: key.email,
+			message: 'ping',
+			pingAt: new Date(),
+		})
         },
         received (data) {
           console.warn(data, 'received data from line channel')
@@ -66,9 +71,10 @@ class ChannelsConnection {
     setInterval(() => {
       this.lineChannel.send({
         roidId: key.email,
-        message: 'pong'
+        message: 'ping',
+	      pingAt: new Date()
       })
-    }, 4000)
+    }, 10000)
   }
 }
 
