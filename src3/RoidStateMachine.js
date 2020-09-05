@@ -6,7 +6,7 @@ const ChannelsConnection = require('./Channel')
 const { Board } = require('johnny-five')
 
 const ARDUINO_PATH_FOR_DEV = '/dev/tty.usbmodem141101'
-const board = new Board({ port: ARDUINO_PATH_FOR_DEV, repl: false })
+const board = new Board({ port: '/dev/ttyS0', repl: false })
 
 const openBoard = require('./openBoard')
 
