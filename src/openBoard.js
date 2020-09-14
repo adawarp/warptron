@@ -3,7 +3,7 @@ const { key } = constantsData
 const { email } = key
 
 const { Fn } = require('johnny-five')
-const servoType = require('../src/servoType')
+const servoType = require('./servoType')
 
 const bodyServo = new servoType()
 const cal = (x) => Fn.map(x, 0, 320, 0, 288)

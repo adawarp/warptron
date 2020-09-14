@@ -1,7 +1,6 @@
 const fetch = require('node-fetch')
 
 const constantsData = require('../constants')
-// const actionCableState = require('./channels')
 const {key} = constantsData
 
 module.exports = async () => {
@@ -29,4 +28,3 @@ module.exports = async () => {
   }
   return Promise.reject(new Error('failed to sign in'));
 }
-

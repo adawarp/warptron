@@ -1,6 +1,3 @@
-const mqtt = require('mqtt')
-const mqttClient = mqtt.connect('mqtt://160.16.238.254')
-const fs = require('fs')
 const WebSocket = require('ws')
 if (typeof window === 'undefined') {
   global.window = {}
@@ -8,6 +5,7 @@ if (typeof window === 'undefined') {
   global.document = { addEventListener: () => null }
   global.WebSocket = WebSocket
 }
+<<<<<<< HEAD
 
 const { exec } = require('child_process')
 const rawData = fs.readFileSync('warp-key.json')
@@ -145,3 +143,8 @@ board.on('ready', () => {
     }
   })
 })
+=======
+const RoidStateMachine = require('./src/RoidStateMachine')
+const state = new RoidStateMachine();
+state.start()
+>>>>>>> refactoring: change main3.js to main.js

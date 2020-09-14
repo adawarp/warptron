@@ -8,7 +8,7 @@ module.exports = function () {
     range: [65, 100],
     degreeRange: [-150, 150]
   })
-
+  
   this.neckYaw = new Servo({
     controller: 'PCA9685',
     pin: 1,
@@ -16,7 +16,7 @@ module.exports = function () {
     range: [15, 120],
     degreeRange: [-150, 150]
   })
-
+  
   this.leftArmPitch = new Servo({
     controller: 'PCA9685',
     pin: 2,
@@ -24,7 +24,7 @@ module.exports = function () {
     range: [20, 100],
     degreeRange: [-150, 150]
   })
-
+  
   this.leftArmYaw = new Servo({
     controller: 'PCA9685',
     pin: 3,
@@ -32,7 +32,7 @@ module.exports = function () {
     range: [30, 80],
     degreeRange: [-150, 150]
   })
-
+  
   this.rightArmPitch = new Servo({
     controller: 'PCA9685',
     pin: 4,
@@ -40,7 +40,7 @@ module.exports = function () {
     range: [60, 140],
     degreeRange: [-150, 150]
   })
-
+  
   this.rightArmYaw = new Servo({
     controller: 'PCA9685',
     pin: 5,
@@ -48,7 +48,7 @@ module.exports = function () {
     range: [80, 130],
     degreeRange: [-150, 150]
   })
-
+  
   this.leftMotor = new Motor({
     pin: 6,
     controller: 'PCA9685'

@@ -1,5 +1,5 @@
 const StateMachine = require('./StateMachine')
-const singInRoid = require('../src2/signIn')
+const singInRoid = require('./SignIn')
 const MqttClient = require('./MqttClient')
 const ChannelsConnection = require('./Channel')
 const runExecCommand = require('./execCommand')
