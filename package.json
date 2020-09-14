@@ -23,7 +23,7 @@
     "actioncable": "^5.2.4-3",
     "johnny-five": "^2.0.0",
     "mqtt": "^3.0.0",
-    "node-fetch": "^2.6.0",
+    "node-fetch": "^2.6.1",
     "serialport": "^8.0.7",
     "websocket": "^1.0.31",
     "ws": "^7.3.0"
