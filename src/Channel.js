@@ -23,8 +23,8 @@ class ChannelsConnection {
   }
 
   connectedAppearanceChannel () {
-    this.appearanceChannel = this.cable.subscriptions.create(
-      { channel: 'AppearanceChannel' },
+    const appearanceChannel = this.cable.subscriptions.create(
+      { channel: 'AppearanceChannel', email: key.email },
       {
         connected () {
           this.perform('appear')
@@ -39,7 +39,7 @@ class ChannelsConnection {
       }
     )
     setInterval(() => {
-      this.appearanceChannel.send({
+      appearanceChannel.send({
         roidId: key.email,
         message: 'ping',
         pingAt: new Date()
@@ -48,7 +48,7 @@ class ChannelsConnection {
   }
 
   connectedLineChannel () {
-    this.lineChannel = this.cable.subscriptions.create(
+    this.cable.subscriptions.create(
       { channel: 'LineChannel', roidId: key.email },
       {
         connected () {
