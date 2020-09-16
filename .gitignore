@@ -55,7 +55,8 @@ web_modules/
 
 # Optional npm cache directory
 .npm
-
+spec
+jest.config.json
 # Optional eslint cache
 .eslintcache
 

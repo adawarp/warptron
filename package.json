@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config ./jest.config.json",
+    "test:watch": "npm run test -- --watch",
     "start": "node main.js",
     "fix": "lint-staged"
   },
@@ -21,6 +22,7 @@
   "homepage": "https://github.com/adawarp/adaroid-os#readme",
   "dependencies": {
     "actioncable": "^5.2.4-3",
+    "debug": "^4.1.1",
     "johnny-five": "^2.0.0",
     "mqtt": "^3.0.0",
     "node-fetch": "^2.6.1",
@@ -37,6 +39,7 @@
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-standard": "^4.0.1",
     "husky": "^4.2.5",
+    "jest": "^26.4.1",
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5"
   },
