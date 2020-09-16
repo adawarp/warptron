@@ -15,7 +15,7 @@ class ChannelsConnection {
   }
 
   createConsumer (cred) {
-    const url = `${wsUrl}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}`
+    const url = `${wsUrl}/cable?uid=${cred.uid}&client=${cred.client}&token=${cred.token}&type=roid`
     this.cable = actionCable.createConsumer(url)
     this.connectedAppearanceChannel()
     this.connectedLineChannel()
