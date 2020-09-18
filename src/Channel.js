@@ -11,7 +11,7 @@ const { wsUrl } = key
 class ChannelsConnection {
   constructor () {
     this.cable = null
-    this.lineChannel = null
+    this.appearanceChannel = null
   }
 
   createConsumer (cred) {
@@ -23,7 +23,7 @@ class ChannelsConnection {
   }
 
   connectedAppearanceChannel () {
-    const appearanceChannel = this.cable.subscriptions.create(
+    this.appearanceChannel = this.cable.subscriptions.create(
       { channel: 'AppearanceChannel', email: key.email },
       {
         connected () {
@@ -39,7 +39,7 @@ class ChannelsConnection {
       }
     )
     setInterval(() => {
-      appearanceChannel.send({
+      this.appearanceChannel.send({
         roidId: key.email,
         message: 'ping',
         pingAt: new Date()
