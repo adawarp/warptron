@@ -14,7 +14,6 @@ const TB6612_BIN1 = 2
 const TB6612_BIN2 = 3
 const TB6612_STBY = 8
 
-
 module.exports = {
   readyBoard: function (board) {
     board.on('ready', () => {
@@ -26,7 +25,7 @@ module.exports = {
       board.digitalWrite(TB6612_STBY, 1)
     })
   },
-  
+
   controlServo: function (board, topic, message) {
     if (topic === `${email}/command`) {
       bodyServo.neckPitch.to(cal(message[3]))
@@ -35,7 +34,7 @@ module.exports = {
       bodyServo.leftArmYaw.to(cal(message[6]))
       bodyServo.rightArmPitch.to(cal(message[7]))
       bodyServo.rightArmYaw.to(cal(message[8]))
-  
+
       if (message[9] === 50 && message[10] === 50) {
         bodyServo.leftMotor.stop()
         bodyServo.rightMotor.stop()
@@ -44,7 +43,7 @@ module.exports = {
         board.digitalWrite(TB6612_AIN1, 1)
         board.digitalWrite(TB6612_AIN2, 0)
         bodyServo.leftMotor.speed(150)
-  
+
         board.digitalWrite(TB6612_BIN1, 0)
         board.digitalWrite(TB6612_BIN2, 1)
         bodyServo.rightMotor.speed(150)
@@ -53,27 +52,27 @@ module.exports = {
         board.digitalWrite(TB6612_AIN1, 0)
         board.digitalWrite(TB6612_AIN2, 1)
         bodyServo.leftMotor.speed(150)
-  
+
         board.digitalWrite(TB6612_BIN1, 1)
         board.digitalWrite(TB6612_BIN2, 0)
         bodyServo.rightMotor.speed(150)
       }
-  
-      if (message[9] === 100 && message[10] === 0) {
+
+      if (message[9] === 0 && message[10] === 100) {
         board.digitalWrite(TB6612_AIN1, 0)
         board.digitalWrite(TB6612_AIN2, 1)
         bodyServo.leftMotor.speed(150)
-  
+
         board.digitalWrite(TB6612_BIN1, 0)
         board.digitalWrite(TB6612_BIN2, 1)
         bodyServo.rightMotor.speed(150)
       }
-  
-      if (message[9] === 0 && message[10] === 100) {
+
+      if (message[9] === 100 && message[10] === 0) {
         board.digitalWrite(TB6612_AIN1, 1)
         board.digitalWrite(TB6612_AIN2, 0)
         bodyServo.leftMotor.speed(150)
-  
+
         board.digitalWrite(TB6612_BIN1, 1)
         board.digitalWrite(TB6612_BIN2, 0)
         bodyServo.rightMotor.speed(150)
