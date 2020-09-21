@@ -107,14 +107,19 @@ class RoidStateMachine {
   }
 
   signIn () {
-    singInRoid()
-      .then((cred) => {
-        this.data.cred = cred
-        this.machine.transition(Events.SIGNED_IN)
-      })
-      .catch((e) => {
-        this.machine.transition(Events.FAILED)
-      })
+    // WARN: add this timeout to wait wlan0 when Rpi turns on.
+    // but not good solution for this network problem
+    // issue #35
+    setTimeout(() => {
+      singInRoid()
+        .then((cred) => {
+          this.data.cred = cred
+          this.machine.transition(Events.SIGNED_IN)
+        })
+        .catch((e) => {
+          this.machine.transition(Events.FAILED)
+        })
+    }, 10000)
   }
 
   start () {
