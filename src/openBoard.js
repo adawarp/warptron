@@ -6,7 +6,8 @@ const { Fn } = require('johnny-five')
 const servoType = require('./servoType')
 
 const bodyServo = new servoType()
-const cal = (x) => Fn.map(x, 0, 320, 0, 288)
+// map servo value because servo degree is not 0 - 360
+const cal = (x) => Fn.map(x, 12, 320, 0, 288)
 
 const TB6612_AIN1 = 0
 const TB6612_AIN2 = 1
@@ -23,6 +24,13 @@ module.exports = {
       board.pinMode(TB6612_BIN2, board.MODES.OUTPUT)
       board.pinMode(TB6612_STBY, board.MODES.OUTPUT)
       board.digitalWrite(TB6612_STBY, 1)
+
+      bodyServo.neckPitch.to(cal(90))
+      bodyServo.neckYaw.to(cal(90))
+      bodyServo.leftArmPitch.to(cal(90))
+      bodyServo.leftArmYaw.to(cal(90))
+      bodyServo.rightArmPitch.to(cal(90))
+      bodyServo.rightArmYaw.to(cal(90))
     })
   },
 
