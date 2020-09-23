@@ -6,7 +6,8 @@ const { Fn } = require('johnny-five')
 const servoType = require('./servoType')
 
 const bodyServo = new servoType()
-const cal = (x) => Fn.map(x, 0, 320, 0, 288)
+// map servo value because servo degree is not 0 - 360
+const cal = (x) => Fn.map(x, 12, 320, 0, 288)
 
 const TB6612_AIN1 = 0
 const TB6612_AIN2 = 1
