@@ -15,6 +15,10 @@ const ARDUINO_PATH = '/dev/ttyS0'
 const board = new Board({ port: ARDUINO_PATH, repl: false })
 
 const openBoard = require('./openBoard')
+// open board in here
+// because of signin setTimeout
+// board.digitalWrite(TB6612_STBY, 1) not work correctly
+openBoard.readyBoard(board)
 
 const Events = {
   INIT: 'INIT',
@@ -94,7 +98,6 @@ class RoidStateMachine {
     const createConsumerPromise = channelsConnection.createConsumer(
       this.data.cred
     )
-    openBoard.readyBoard(board)
     runExecCommand('start-momo', execMomoCommand)
     Promise.all([mqttPromise, createConsumerPromise])
       .then(() => {
