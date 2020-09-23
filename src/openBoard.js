@@ -23,6 +23,13 @@ module.exports = {
       board.pinMode(TB6612_BIN2, board.MODES.OUTPUT)
       board.pinMode(TB6612_STBY, board.MODES.OUTPUT)
       board.digitalWrite(TB6612_STBY, 1)
+
+      bodyServo.neckPitch.to(cal(90))
+      bodyServo.neckYaw.to(cal(90))
+      bodyServo.leftArmPitch.to(cal(90))
+      bodyServo.leftArmYaw.to(cal(90))
+      bodyServo.rightArmPitch.to(cal(90))
+      bodyServo.rightArmYaw.to(cal(90))
     })
   },
 
