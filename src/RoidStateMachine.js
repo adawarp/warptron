@@ -77,7 +77,6 @@ class RoidStateMachine {
 
   underControl () {
     this.data.mqtt.client.on('message', function (topic, message) {
-      console.log(message, topic)
       openBoard.controlServo(board, topic, message)
     })
   }
