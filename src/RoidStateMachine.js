@@ -121,7 +121,7 @@ class RoidStateMachine {
         .catch((e) => {
           this.machine.transition(Events.FAILED)
         })
-    }, 10000)
+    }, 12000)
   }
 
   start () {
