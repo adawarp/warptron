@@ -1,31 +1,30 @@
-const Debug = require("debug");
-const debug = new Debug("mqtt");
-const mqtt = require('mqtt');
-const MQTT_URL = 'mqtt://160.16.238.254';
+const Debug = require('debug')
+const debug = new Debug('mqtt')
+const mqtt = require('mqtt')
+const MQTT_URL = 'mqtt://mqtt.tigerscave.work'
 
 const constantsData = require('../constants')
 const { key } = constantsData
-const {email} = key
+const { email } = key
 
 class MqttClient {
-  constructor() {
-    this.client = null;
+  constructor () {
+    this.client = null
   }
-  
-  connect( ) {
-    this.client = mqtt.connect(MQTT_URL);
-    debug("connecting...");
+
+  connect () {
+    this.client = mqtt.connect(MQTT_URL)
+    debug('connecting...')
     return new Promise((resolve, reject) => {
-      debug("connected");
-      this.client.once('connect', resolve);
+      debug('connected')
+      this.client.once('connect', resolve)
     })
   }
-  
-  subscribe() {
-    this.client.subscribe(email,debug)
-    this.client.subscribe(`${email}/command`,debug)
+
+  subscribe () {
+    this.client.subscribe(email, debug)
+    this.client.subscribe(`${email}/command`, debug)
   }
-  
 }
 
-module.exports = MqttClient;
+module.exports = MqttClient
