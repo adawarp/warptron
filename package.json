@@ -28,7 +28,7 @@
     "node-fetch": "^2.6.1",
     "serialport": "^8.0.7",
     "websocket": "^1.0.31",
-    "ws": "^7.3.0"
+    "ws": "^7.4.6"
   },
   "devDependencies": {
     "eslint": "^7.3.1",
